@@ -1,0 +1,44 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2
+    restart: unless-stopped
+    volumes:
+      - ./mosquitto:/mosquitto/config
+      - mosquitto-data:/mosquitto/data
+    ports:
+      - "1883:1883"
+
+  ring-mqtt:
+    image: tsightler/ring-mqtt:latest
+    restart: unless-stopped
+    volumes:
+      - ./ring-mqtt:/data
+    ports:
+      - "8554:8554"
+    depends_on:
+      - mosquitto
+
+  homeassistant:
+    image: ghcr.io/home-assistant/home-assistant:stable
+    restart: unless-stopped
+    volumes:
+      - ./homeassistant:/config
+      - C:/ring-clips:/media/ring-clips
+    ports:
+      - "8123:8123"
+    depends_on:
+      - mosquitto
+      - ring-mqtt
+
+  cleanup:
+    image: alpine:latest
+    restart: unless-stopped
+    environment:
+      - RETENTION_DAYS=${RETENTION_DAYS:-3}
+    volumes:
+      - C:/ring-clips:/media/ring-clips
+    entrypoint: >
+      sh -c "while true; do find /media/ring-clips -type f -mtime +$$RETENTION_DAYS -delete; sleep 86400; done"
+
+volumes:
+  mosquitto-data:
