@@ -25,14 +25,24 @@ from scratch, or how to troubleshoot it, see `SETUP_NOTES.md`.
 
 ## Validation
 - [x] Motion-triggered recording confirmed — clip landed in `C:\ring-clips`
-- [ ] Doorbell-press trigger itself not separately confirmed (uses the same
-      automation/action as motion, so expected to work, just not yet
-      explicitly tested by pressing the physical button)
-- [ ] Full reboot test (restart the desktop, confirm everything comes back
-      without manual steps) not yet explicitly confirmed
+- [x] Doorbell-press trigger confirmed via a real ring on 2026-08-13 12:57 CT
+      — `binary_sensor.front_door_ding` fired (confirmed in the HA recorder
+      DB), one second after `binary_sensor.front_door_motion`. Because the
+      automation defaults to `mode: single` and motion fired first, the ding
+      trigger was skipped rather than starting its own recording — the
+      resulting clip is filename-tagged `front_door_motion`, not `_ding`,
+      even though a real doorbell press is what happened. The 20s clip
+      window still covers the ding (which landed 1s into it), so the event
+      itself isn't missed, just mislabeled when motion and ding land close
+      together. Not fixing unless it becomes a real problem — noting here so
+      it's not mistaken for a bug later.
+- [x] Full reboot test confirmed. First attempt failed — Docker Desktop
+      didn't auto-start after reboot, so the stack stayed down. Fixed by
+      toggling Docker Desktop's "Start Docker Desktop when you sign in"
+      setting on (Settings → General, in the Docker Desktop GUI). Retested
+      and confirmed the stack comes back on its own after a reboot.
 
-Neither open item is blocking — flagging them here in case they come up
-later, not as outstanding work.
+All open validation items are now closed.
 
 ## Standing instructions
 - Never attempt Ring 2FA login on Lauren's behalf.
