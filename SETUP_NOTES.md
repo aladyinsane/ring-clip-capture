@@ -2,7 +2,7 @@
 
 Reference doc for how this was built, and how to rebuild or troubleshoot it.
 This is not a forward-looking plan — it describes the actual working setup.
-For current run status, see `STATUS.md`.
+What it's for and the decisions behind it: `README.md`. Current state: `STATUS.md`.
 
 ## What this is
 Self-hosted capture of Ring doorbell clips (ding + motion) without a Ring
