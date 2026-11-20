@@ -6,7 +6,7 @@ services:
       - ./mosquitto:/mosquitto/config
       - mosquitto-data:/mosquitto/data
     ports:
-      - "1883:1883"
+      - "127.0.0.1:1883:1883"
 
   ring-mqtt:
     image: tsightler/ring-mqtt:latest
@@ -14,7 +14,7 @@ services:
     volumes:
       - ./ring-mqtt:/data
     ports:
-      - "8554:8554"
+      - "127.0.0.1:8554:8554"
     depends_on:
       - mosquitto
 

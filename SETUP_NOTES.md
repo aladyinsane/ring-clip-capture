@@ -65,7 +65,7 @@ services:
       - ./mosquitto:/mosquitto/config
       - mosquitto-data:/mosquitto/data
     ports:
-      - "1883:1883"
+      - "127.0.0.1:1883:1883"
 
   ring-mqtt:
     image: tsightler/ring-mqtt:latest
@@ -73,7 +73,7 @@ services:
     volumes:
       - ./ring-mqtt:/data
     ports:
-      - "8554:8554"
+      - "127.0.0.1:8554:8554"
     depends_on:
       - mosquitto
 
@@ -107,6 +107,14 @@ networking is unreliable on Docker Desktop for Windows. Explicit port mapping
 (`8123:8123`) is used instead; the only cost is mDNS auto-discovery, which
 isn't needed since Ring is added manually via MQTT.
 
+MQTT (`1883`) and the RTSP relay (`8554`) are published on `127.0.0.1` only.
+Mosquitto allows anonymous logins and the RTSP stream has no password, so
+publishing them on all interfaces would let any device on the Wi-Fi or the
+tailnet read Ring events and watch the doorbell feed. Home Assistant reaches
+both over the compose network (`mosquitto:1883`, `ring-mqtt:8554`), so it
+doesn't need the host ports. `8123` stays on all interfaces because the phone
+reaches Home Assistant over Tailscale, and Home Assistant has its own login.
+
 Clips live at `C:\ring-clips` on the desktop's own drive — no network share
 or external drive involved. Since nothing is retained past `RETENTION_DAYS`,
 total size stays in the low GB range regardless of where it lives.
@@ -118,7 +126,9 @@ allow_anonymous true
 persistence true
 persistence_location /mosquitto/data/
 ```
-(Anonymous access is fine — the port isn't forwarded to the internet.)
+(Anonymous access is OK only because `1883` is published on `127.0.0.1`; see
+the note under step 1. Don't publish it on all interfaces without adding a
+password.)
 
 **`.env`**
 ```
