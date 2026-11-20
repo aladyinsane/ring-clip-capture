@@ -126,7 +126,9 @@ allow_anonymous true
 persistence true
 persistence_location /mosquitto/data/
 ```
-(Anonymous access is fine — the port isn't forwarded to the internet.)
+(Anonymous access is OK only because `1883` is published on `127.0.0.1`; see
+the note under step 1. Don't publish it on all interfaces without adding a
+password.)
 
 **`.env`**
 ```
